@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+    <h2>Transactions History</h2>
+    </br>
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="text-start">Symbol</th>
+                <th class="text-end">Shares</th>
+                <th class="text-end">Price</th>
+                <th class="text-end">Transacted</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+                <tr>
+                {% if transaction.symbol == 'DEPOSIT' %}
+                    <td class="text-start fw-bold text-success">Deposit</td>
+                    <td class="text-end">–</td>
+                    <td class="text-end">{{ transaction.price | usd}}</td>
+                    <td class="text-end">{{ transaction.timestamp }}</td>
+                {% else %}
+                    <td class="text-start">{{ transaction.symbol }}</td>
+                    <td class="text-end">{{ transaction.shares }}</td>
+                    <td class="text-end">{{ transaction.price | usd }}</td>
+                    <td class="text-end">{{ transaction.timestamp }}</td>
+                {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

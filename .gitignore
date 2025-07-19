@@ -1,0 +1,12 @@
+# Ignore the virtual environment
+venv/
+
+# Ignore the database file
+finance.db
+
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+
+# Ignore system files
+.DS_Store

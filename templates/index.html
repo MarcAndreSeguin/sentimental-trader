@@ -1,0 +1,108 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Portfolio
+{% endblock %}
+
+{% block main %}
+    <h2>Portfolio</h2>
+    <p><em>Refresh page for real-time quotes.</em></p>
+    <form method="get" action="">
+        <button type="submit" class="btn btn-outline-secondary btn-sm">
+        🔄 Refresh Prices
+        </button>
+    </form>
+    </br>
+    <table id="portfolio-table" class="table table-striped">
+        <thead>
+            <tr>
+                <th class="text-start" style="width: 140px;">Trade</th>
+                <th class="text-start sortable" data-index="1">Symbol <span class="sort-arrow">⇅</span></th>
+                <th class="align-middle">Company</th>
+                <th class="text-end sortable" data-index="3">Shares <span class="sort-arrow">⇅</span></th>
+                <th class="text-end sortable" data-index="4">Price <span class="sort-arrow">⇅</span></th>
+                <th class="text-end sortable" data-index="5">TOTAL VALUE <span class="sort-arrow">⇅</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for holding in holdings %}
+            <tr>
+                <td>
+                    <div class="d-flex flex-column gap-1">
+                        <!-- Buy form -->
+                        <form action="/buy" method="post" class="d-flex align-items-center gap-1">
+                            <input type="hidden" name="symbol" value="{{ holding.symbol }}">
+                            <input type="number" name="shares" min="1" placeholder="Buy" class="form-control form-control-sm" style="width: 60px;">
+                            <button class="btn btn-sm btn-success px-2">+</button>
+                        </form>
+
+                        <!-- Sell form -->
+                        <form action="/sell" method="post" class="d-flex align-items-center gap-1">
+                            <input type="hidden" name="symbol" value="{{ holding.symbol }}">
+                            <input type="number" name="shares" min="1" max="{{ holding.shares }}" placeholder="Sell" class="form-control form-control-sm" style="width: 60px;">
+                            <button class="btn btn-sm btn-danger px-2">−</button>
+                        </form>
+                    </div>
+                </td>
+                <td class="align-middle">{{ holding.symbol }}</td>
+                <td class="align-middle">{{ holding.name }}</td>
+                <td class="text-end align-middle">{{ holding.shares }}</td>
+                <td class="text-end align-middle">{{ holding.price }}</td>
+                <td class="text-end align-middle">{{ holding.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td class="border-0 fw-bold text-end" colspan="5">Holdings</td>
+                <td class="border-0 text-end">{{ total_holdings_value }}</td>
+            </tr>
+            <tr>
+                <td class="border-0 fw-bold text-end" colspan="5">Cash</td>
+                <td class="border-0 text-end">{{ cash }}</td>
+            </tr>
+            <tr>
+                <td class="border-0 fw-bold text-end" colspan="5">GRAND TOTAL</td>
+                <td class="border-0 fw-bold text-end">{{ grand_total }}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const table = document.getElementById("portfolio-table");
+
+    const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+
+    const comparer = (idx, asc) => (a, b) =>
+        ((v1, v2) =>
+            v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2)
+                ? v1 - v2
+                : v1.toString().localeCompare(v2)
+        )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+
+    let currentSortedColumn = null;
+
+    table.querySelectorAll("th.sortable").forEach((th, i) => {
+        th.addEventListener("click", function () {
+            const idx = parseInt(th.dataset.index);
+            const tbody = table.querySelector("tbody");
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+            const ascending = th.classList.toggle("asc");
+
+            // Remove arrows from other headers
+            table.querySelectorAll(".sort-arrow").forEach(span => span.textContent = "⇅");
+            th.querySelector(".sort-arrow").textContent = ascending ? "↑" : "↓";
+
+            // Reset others
+            table.querySelectorAll("th.sortable").forEach(otherTh => {
+                if (otherTh !== th) otherTh.classList.remove("asc");
+            });
+
+            rows.sort(comparer(idx, ascending)).forEach(tr => tbody.appendChild(tr));
+        });
+    });
+});
+</script>
+
+{% endblock %}

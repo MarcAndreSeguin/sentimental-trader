@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Quoted
+{% endblock %}
+
+{% block main %}
+    <h2>Your Quote</h2>
+    <br>
+    <p class="text-center">
+        A share of <strong>{{ name }}</strong> ({{ symbol }}) has a value of <strong>{{ price }} right now</strong>.
+    </p>
+    <p>You currently own {{ shares_owned }} shares of this stock.</p>
+    <hr>
+    <h5 class="text-center">Trade {{ symbol }} Immediately @ {{ price }}</h5>
+
+    <div class="d-flex flex-column align-items-center gap-3 mt-3">
+
+        <!-- Buy Form -->
+        <form action="/buy" method="post" class="d-flex align-items-center gap-2">
+            <input type="hidden" name="symbol" value="{{ symbol }}">
+            <input type="number" name="shares" min="1" placeholder="Buy" class="form-control form-control-sm text-center" style="width: 80px;">
+            <button class="btn btn-success btn-sm">Buy</button>
+        </form>
+
+        {% if shares_owned > 0 %}
+        <!-- Sell Form -->
+        <form action="/sell" method="post" class="d-flex align-items-center gap-2">
+            <input type="hidden" name="symbol" value="{{ symbol }}">
+            <input type="number" name="shares" min="1" max="{{ shares_owned }}" placeholder="Sell" class="form-control form-control-sm text-center" style="width: 80px;">
+            <button class="btn btn-danger btn-sm">Sell</button>
+        </form>
+        {% endif %}
+
+    </div>
+{% endblock %}
