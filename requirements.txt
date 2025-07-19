@@ -6,6 +6,7 @@ click==8.1.8
 cs50==9.4.0
 Flask==3.1.1
 Flask-Session==0.8.0
+gunicorn==23.0.0
 idna==3.10
 importlib_metadata==8.7.0
 itsdangerous==2.2.0
